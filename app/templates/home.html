@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+  <div class="jumbo">
+    <h2>Bienvenido<h2>
+    <h3>Sube tu archivo con los post<h3>
+    	<form method="post" action="/" enctype="multipart/form-data">
+		<label for="archivo">Archivo</label>
+		<input type="file" name="archivo" id="archivo"><br><br>
+		<input type="submit" name="Enviar" value="Subir">
+	</form>
+  </div>
+   {% for message in get_flashed_messages() %}
+    <div class="flash">{{ message }}</div>
+  {% endfor %}
+  	{%for q in entradas%}
+  		<h1>{{q.title}}</h1>
+  		<p>{{q.author}}</p>
+  		<p>{{q.textito}}</p>
+  	{%endfor%}
+  	
+{% endblock %}
