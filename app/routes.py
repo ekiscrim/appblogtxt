@@ -1,8 +1,11 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 
 from flask import Flask, render_template,request, g, flash,redirect,url_for
 import os
 from sqlite3 import dbapi2 as sqlite3
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 #ver: https://github.com/code-haven/FlaskBlog/blob/master/flaskblog.py
 
@@ -22,6 +25,7 @@ app.config.from_envvar('POST_SETTINGS', silent=True)
 def connect_db():
 	'''Conecta con la base de datos especifica'''
 	con = sqlite3.connect(app.config['DATABASE'])
+	con.text_factory = str
 	con.row_factory = sqlite3.Row
 	return con
 '''
@@ -74,13 +78,31 @@ def mostrar_post():
 def add_post():
 	db = get_db()
 	fichero = request.files['archivo']
+	lineaFichero=1
 	for linea in fichero.readlines():
-		partir = linea.split('#')
-		titulo = partir[1]
-		autor = partir[2]
-		texto = partir[3]
-		db.execute('INSERT INTO post (title,author,textillo) VALUES (?,?,?)',[titulo,autor,texto])
-		db.commit()
+		try:
+			partir = linea.split('#')
+			titulo = partir[1]
+			autor = partir[2]
+			texto = partir[3]
+			titulo = titulo.decode('utf-8')
+			autor = autor.decode('utf-8')
+			texto = texto.decode('utf-8')
+			unicode(titulo)
+			unicode(autor)
+			unicode(texto)
+
+			db.execute('INSERT INTO post (title,author,textillo) VALUES (?,?,?)',[unicode(titulo),unicode(autor),unicode(texto)])
+			db.commit()
+			lineaFichero+=1
+		except IndexError as e:
+			import traceback, os.path
+			top = traceback.extract_stack()[-1]
+			flash(str(e)+' - '.join([type(e).__name__, os.path.basename(top[0]), str(top[1])]))
+		except UnicodeDecodeError as e:
+			import traceback, os.path
+			top = traceback.extract_stack()[-1]
+			flash(str(e)+' - '.join([type(e).__name__, os.path.basename(top[0]), str(top[1])]))
 	flash('Entradas agregadas con exito')
 	return redirect(url_for('mostrar_post'))
 if __name__ == '__main__':

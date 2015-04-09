@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+﻿{% extends "layout.html" %}
 {% block content %}
   <div class="jumbo">
     <h2>Bienvenido<h2>
@@ -9,9 +9,11 @@
 		<input type="submit" name="Enviar" value="Subir">
 	</form>
   </div>
+  <ol>
    {% for message in get_flashed_messages() %}
-    <div class="flash">{{ message }}</div>
+    <div class="flash"><li>{{ message }}</li></div>
   {% endfor %}
+  </ol>
   	{%for q in entradas%}
   		<h1>{{q.title}}</h1>
   		<p>{{q.author}}</p>
